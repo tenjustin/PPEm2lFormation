@@ -127,6 +127,31 @@ include_once(dirname(__FILE__)."/../dal/dbInit.php");
 	
 		return $options;
 	}
+
+	function RechercheFormationParId($idFormation)
+	{
+		$conn = Initialisation();
+
+		// Préparez la requête SQL pour récupérer la formation par id
+		$stmt = $conn->prepare("SELECT * FROM formation WHERE idFormation = :idFormation");
+		$stmt->bindParam(':idFormation', $idFormation);
+
+		// Exécutez la requête
+		$stmt->execute();
+
+		// Récupérez la formation
+		$formation = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+		// Fermez la connexion
+		$stmt = NULL;
+		$conn = NULL;
+
+		// Retournez la formation
+		return $formation;
+	}
+
+	
+
 	
 	
 

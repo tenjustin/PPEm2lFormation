@@ -53,7 +53,7 @@ include_once(dirname(__FILE__)."/../dal/dbInit.php");
 		
 		
 		//SELECT avec FETCHALL()
-		$sql="select idEmploye, nom from Employe where superieur = :id";
+		$sql="select idEmploye, nom, jours, credits from Employe where superieur = :id";
 		$stmt = $base->prepare($sql);
 		
 		$stmt->BindValue(':id', $id);;
@@ -249,6 +249,76 @@ function ajouterEmploye($nom, $mdp, $typeEmploye, $superieur) {
   
 	return $resultat;
   }
+
+  	function SupprimerUtilisateur($idUtilisateur)
+	{
+		// Connexion à la base de données
+		$base = Initialisation();
+
+		// Suppression de l'utilisateur de la table Utilisateur
+		$sql = "DELETE FROM employe WHERE idEmploye = :idUtilisateur";
+		$stmt = $base->prepare($sql);
+		$stmt->bindValue(':idUtilisateur', $idUtilisateur, PDO::PARAM_INT);
+		$resultat = $stmt->execute();
+
+		// Fermeture de la connexion à la base de données
+		$base = NULL;
+
+		return $resultat;
+	}
+
+	function VerifierMotDePasse($idUtilisateur, $motDePasse)
+{
+    //Connexion à la base
+    $base = Initialisation();
+
+    //Préparation de la requête
+    $sql = "SELECT mdp FROM employe WHERE idEmploye = :idUtilisateur";
+    $stmt = $base->prepare($sql);
+
+    //Bind des paramètres
+    $stmt->bindParam(':idUtilisateur', $idUtilisateur);
+
+    //Exécution de la requête
+    $stmt->execute();
+
+    //Récupération du résultat
+    $resultat = $stmt->fetch(PDO::FETCH_OBJ);
+
+    //Fermeture de la base
+    $base = NULL;
+
+    //Vérification du mot de passe
+    if (md5($motDePasse) == $resultat->mdp) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function ModifierMotDePasse($idEmploye, $nouveauMotDePasse) {
+    // Connexion à la base de données
+    $base = Initialisation();
+	$nouveauMotDePasse = md5($nouveauMotDePasse);
+
+    // Préparation de la requête SQL
+    $sql = "UPDATE employe SET mdp = :nouveauMdp WHERE idEmploye = :idEmploye";
+    $stmt = $base->prepare($sql);
+
+    // Bind des paramètres
+    $stmt->bindValue(':nouveauMdp', $nouveauMotDePasse);
+    $stmt->bindValue(':idEmploye', $idEmploye);
+
+    // Exécution de la requête
+    $retour = $stmt->execute();
+
+    // Fermeture de la connexion à la base de données
+    $base = NULL;
+
+    return $retour;
+}
+
+
   
 
 	

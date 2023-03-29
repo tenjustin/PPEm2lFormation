@@ -14,10 +14,10 @@ $selection = RechercheSelection(ObtenirIdEnCours());
 	<div id="equipe">
         <h2>Mon équipe</h2>
         <table>
-            <thead><tr><td>Nom</td></tr></thead>
+            <thead><tr><td>Nom</td><td>Jours</td><td>Crédits</td></tr></thead>
             <?php
                 foreach($equipe as $employe){
-                    echo "<tr><td>$employe->nom</td></tr>";
+                    echo "<tr><td>$employe->nom</td><td>$employe->jours</td><td>$employe->credits</td><td><form action='lib/deleteUser.php' method='POST'><input type='hidden' name='idUtilisateur' value='$employe->idEmploye'><input type='submit' value='Supprimer'></form></td></tr>";
                 }
             ?>
         </table>

@@ -1,5 +1,7 @@
 <?php
 include_once(dirname(__FILE__)."/../dal/dbInit.php");
+include_once 'dbFormation.php';
+
 
 /**
  * Insére une nouvelle formation pour un salarié
@@ -36,22 +38,44 @@ include_once(dirname(__FILE__)."/../dal/dbInit.php");
 	 */
 	function ValiderFormation($idEmploye, $idFormation)
 	{
-		//Connexion à la base
+		// Connexion à la base de données
 		$base = Initialisation();
-	
-	
-		//SELECT avec FETCHALL()
-		$sql="update Selectionner set etat= 'valide' where idEmploye= :idEmploye and idFormation = :idFormation";
-		$stmt = $base->prepare($sql);
-	
-		$stmt->BindValue(':idFormation', $idFormation);
-		$stmt->BindValue(':idEmploye', $idEmploye);
-	
-		$retour = $stmt->execute();
+
+		// Obtenir les informations de la formation
+		$formation = RechercheFormationParId($idFormation);
+
+		// Obtenir les informations de l'employé
+		$employe = RechercheInfosEmploye($idEmploye);
+
+		// Vérifier si l'employé a assez de crédits et de jours de formation
+		if ($employe[0]->credits >= $formation[0]->credit && $employe[0]->jours >= $formation[0]->duree) {
+
+			// Mettre à jour la table Selectionner
+			$sql = "UPDATE Selectionner SET etat = 'valide' WHERE idEmploye = :idEmploye AND idFormation = :idFormation";
+			$stmt = $base->prepare($sql);
+			$stmt->BindValue(':idFormation', $idFormation);
+			$stmt->BindValue(':idEmploye', $idEmploye);
+			$stmt->execute();
+
+			// Soustraire les crédits et les jours de formation de l'employé
+			$creditRestant = $employe[0]->credits - $formation[0]->credit;
+			$joursFormationRestants = $employe[0]->jours - $formation[0]->duree;
+			$sql = "UPDATE Employe SET credits = :creditRestant, jours = :joursFormationRestants WHERE idEmploye = :idEmploye";
+			$stmt = $base->prepare($sql);
+			$stmt->BindValue(':creditRestant', $creditRestant);
+			$stmt->BindValue(':joursFormationRestants', $joursFormationRestants);
+			$stmt->BindValue(':idEmploye', $idEmploye);
+			$stmt->execute();
+
+			$retour = true;
+		} else {
+			$retour = false;
+		}
+
+		// Fermer la connexion à la base de données
 		$base = NULL;
-	
+
 		return $retour;
-	
 	}
 
 	function RechercheSelection($idEmploye){

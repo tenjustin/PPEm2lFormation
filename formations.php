@@ -8,6 +8,7 @@ include 'dal/dbFormation.php';
 include 'dal/dbSelection.php';
 
 $formationEmploye = RechercheToutesFormations(ObtenirIdEnCours());
+$employe = RechercheInfosEmploye(ObtenirIdEnCours());
 
 
 ?>
@@ -27,9 +28,15 @@ $formationEmploye = RechercheToutesFormations(ObtenirIdEnCours());
 				echo "<td class='duree'>$uneFormation->duree</td>";
 				echo "<td>$uneFormation->credit</td>";
 				echo "<td><input type='hidden' id='iddForm' name='idFormation' value='$uneFormation->idFormation'/></td>";
-				echo "<td id='$btnSelect'><input type=submit value='Sélectionner'/></td>";
-				echo "</tr>"; 
-				echo "</form>";
+				echo "<td id='$btnSelect'>";
+				if ($uneFormation->credit <= $employe[0]->credits && $uneFormation->duree <= $employe[0]->jours) {
+                    echo "<input type=submit value='Sélectionner'/>";
+                } else {
+                    echo "<p>Crédit ou jours disponibles insuffisants</p>";
+                }
+                echo "</td>";
+                echo "</tr>"; 
+                echo "</form>";
 			}
 		?>
 	</table>
@@ -39,16 +46,22 @@ $formationEmploye = RechercheToutesFormations(ObtenirIdEnCours());
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-	if (InsererNouvelleSelection(ObtenirIdEnCours(), $_POST['idFormation'])){
+    $idFormation = $_POST['idFormation'];
+    $employeId = ObtenirIdEnCours();
+    $formation = RechercheFormationParId($idFormation);
+    $employe = RechercheInfosEmploye($employeId);
 
-		header('Location: formations.php');
+    if ($formation->credit <= $employe->credit && $formation->duree <= $employe->joursDispo) {
 
-	} else {
+        if (InsererNouvelleSelection($employeId, $idFormation)){
+            header('Location: formations.php');
+        } else {
+            echo '<p>Erreur de selection</p>';
+        }
 
-		echo '<p>Erreur de selection</p>';
-
-	}
-    
+    } else {
+        echo '<p>Crédit ou jours disponibles insuffisants</p>';
+    }
 }
 
 ?>
