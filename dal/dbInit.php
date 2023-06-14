@@ -7,8 +7,8 @@
 
 	function Initialisation()
 	{
-		$user = 'formationPPE';
-		$pass = 'password';
+		$user = 'client_FPPE';
+		$pass = '6X6n.a4pb@EOpRKj';
 		$hote = 'localhost';
 		$port = '3306';
 		$base = 'formationppe';

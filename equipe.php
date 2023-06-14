@@ -38,6 +38,7 @@ $selection = RechercheSelection(ObtenirIdEnCours());
                         echo "<td><input type='hidden' id='iddForm' name='idFormation' value='$uneSelection->idFormation'/></td>";
                         echo "<td><input type='hidden' id='iddEmp' name='idEmploye' value='$uneSelection->idEmploye'/></td>";
 				        echo "<td><input type=submit value='Valider'/></td>";
+                        echo "<td><input type=submit value='Refuser'/></td>";
                         echo "</tr>";
                         echo "</form>";
                     }
